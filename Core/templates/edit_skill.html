@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Edit Skill{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow p-4">
+        <h3 class="text-center">Edit Skill - {{ skill.skill.name }}</h3>
+        <form method="post">
+            {% csrf_token %}
+            
+            <!-- Skill Name (Disabled to prevent accidental changes) -->
+            <div class="mb-3">
+                <label class="form-label">Skill Name</label>
+                <input type="text" value="{{ skill.skill.name }}" class="form-control" disabled>
+                <input type="hidden" name="skill_name" value="{{ skill.skill.name }}">
+            </div>
+
+            <!-- Skill Type (Lowercase Fix & Standardized Values) -->
+            <div class="mb-3">
+                <label class="form-label">Skill Type</label>
+                <select name="skill_type" class="form-control" required>
+                    <option value="teach" {% if skill.skill_type == "teach" %}selected{% endif %}>Teach</option>
+                    <option value="learn" {% if skill.skill_type == "learn" %}selected{% endif %}>Learn</option>
+                    <option value="volunteer" {% if skill.skill_type == "volunteer" %}selected{% endif %}>Volunteer</option>
+                </select>
+            </div>
+
+            <!-- Proficiency Level -->
+            <div class="mb-3">
+                <label class="form-label">Proficiency Level</label>
+                <select name="skill_proficiency" class="form-control" required>
+                    <option value="beginner" {% if skill.skill_proficiency == "beginner" %}selected{% endif %}>Beginner</option>
+                    <option value="intermediate" {% if skill.skill_proficiency == "intermediate" %}selected{% endif %}>Intermediate</option>
+                    <option value="expert" {% if skill.skill_proficiency == "expert" %}selected{% endif %}>Expert</option>
+                </select>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-success">✅ Save Changes</button>
+                <a href="{% url 'profile' %}" class="btn btn-secondary">❌ Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+<p>
+    <strong class="text-info">🤝 Volunteers For:</strong>
+    {% for skill in user.user_skills.all %}
+    {% if skill.skill_type == "volunteer" %}
+    <span class="badge bg-warning text-dark">{{ skill.skill.name }} ({{ skill.skill_proficiency }})</span>
+    {% endif %}
+    {% endfor %}
+</p>
+
+
+<p>
+    <strong class="text-info">🤝 Volunteers For:</strong>
+    {% for skill in user.user_skills.all %}
+    {% if skill.skill_type == "volunteer" %}
+    <span class="badge bg-warning text-dark">{{ skill.skill.name }} ({{ skill.skill_proficiency }})</span>
+    {% endif %}
+    {% endfor %}
+</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def find_skills(request):
+    user_id = request.session.get("student_id")
+    current_user = get_object_or_404(Student, id=user_id)
+
+    # Users who have skill swaps (teach/learn) but NOT volunteers
+    swap_users = Student.objects.exclude(id=user_id).filter(
+        user_skills__skill_type__in=["teach", "learn"]
+    ).distinct().prefetch_related("user_skills__skill")
+
+    # Users who have ONLY volunteer skills
+    volunteer_users = Student.objects.exclude(id=user_id).filter(
+        user_skills__skill_type="volunteer"
+    ).distinct().prefetch_related("user_skills__skill")
+
+    # Fetch profile pictures for each student
+    for user in swap_users:
+        user.profile_pic = Profile_Pic.objects.filter(student=user).first()
+
+    for user in volunteer_users:
+        user.profile_pic = Profile_Pic.objects.filter(student=user).first()
+
+    context = {
+        "swap_users": swap_users,
+        "volunteer_users": volunteer_users,
+    }
+    return render(request, "find_skills.html", context)

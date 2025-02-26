@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h2 class="text-center">📩 Swap Requests</h2>
+
+<div class="container">
+    <div class="row">
+        <!-- 📥 Incoming Requests -->
+        <div class="col-md-6">
+            <h3>📥 Incoming Requests</h3>
+            {% if incoming_requests %}
+            <ul class="list-group">
+                {% for request in incoming_requests %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <strong>{{ request.sender.name }}</strong> wants to swap
+                    <strong>{{ request.skill.skill.name }}</strong>
+                    <div>
+                        {% if request.status == "pending" %}
+                        <!-- Accept Form -->
+                        <form action="{% url 'accept_request' request.id %}" method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-sm">✅ Accept</button>
+                        </form>
+
+                        <!-- Reject Form (Fixed) -->
+                        <form action="{% url 'reject_request' request.id %}" method="post" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">❌ Reject</button>
+                        </form>
+                        {% endif %}
+
+                        <span class="badge 
+                                    {% if request.status == 'accepted' %} bg-success 
+                                    {% elif request.status == 'pending' %} bg-warning 
+                                    {% elif request.status == 'rejected' %} bg-danger 
+                                    {% endif %}">
+                            {{ request.status|title }}
+                        </span>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-muted">No incoming swap requests.</p>
+            {% endif %}
+        </div>
+
+        <!-- 📤 Outgoing Requests -->
+        <div class="col-md-6">
+            <h3>📤 Outgoing Requests</h3>
+            {% if outgoing_requests %}
+            <ul class="list-group">
+                {% for request in outgoing_requests %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    Request sent to <strong>{{ request.receiver.name }}</strong> for
+                    <strong>{{ request.skill.skill.name }}</strong>
+                    <div>
+                        {% if request.status == "pending" %}
+                        <form action="{% url 'cancel_request' request.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-warning btn-sm">❌ Cancel</button>
+                        </form>
+                        {% endif %}
+
+                        <span class="badge 
+                                    {% if request.status == 'accepted' %} bg-success 
+                                    {% elif request.status == 'pending' %} bg-warning 
+                                    {% elif request.status == 'rejected' %} bg-danger 
+                                    {% endif %}">
+                            {{ request.status|title }}
+                        </span>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-muted">No outgoing swap requests.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

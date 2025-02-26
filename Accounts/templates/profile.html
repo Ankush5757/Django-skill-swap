@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Profile - Skill Swap{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Left Side: Profile Image & User Info -->
+        <div class="col-md-4">
+            <div class="card shadow p-4 text-center">
+                <div class="d-flex flex-column align-items-center">
+                    <!-- Profile Image -->
+                    <img src="{% if profile_pic and profile_pic.image %}{{ profile_pic.image.url }}{% else %}{% static 'images/default-profile.jpg' %}{% endif %}"
+                        class="rounded-circle border border-secondary profile-pic">
+                    <h4 class="mt-3">{{ user.name }}</h4>
+                    <p class="text-muted">{{ user.email }}</p>
+
+                    <!-- Buttons for Profile Actions -->
+                    <div class="mt-3 d-flex flex-wrap justify-content-center gap-2">
+                        <button type="button" class="btn btn-outline-info btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#uploadPhotoModal">Upload Photo</button>
+                        {% if profile_pic and profile_pic.image %}
+                        <a href="{% url 'delete_profile_pic' %}" class="btn btn-outline-danger btn-sm">Remove</a>
+                        {% endif %}
+                        <a href="{% url 'update_profile' %}" class="btn btn-outline-warning btn-sm">Edit Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Manage Skills & Find Skills -->
+        <div class="col-md-8">
+            <div class="card shadow p-4">
+                <h4 class="text-dark">📌 Manage Your Skills</h4>
+
+                {% if teach_skills or learn_skills or volunteer_skills %}
+                <div class="list-group">
+                    {% if teach_skills %}
+                    <h5 class="mt-3 text-primary">📚 Skills You Can Teach</h5>
+                    <ul class="list-group">
+                        {% for skill in teach_skills %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>{{ skill.skill.name }} <span class="badge bg-primary">Level: {{ skill.skill_proficiency }}</span></span>
+                            <span>
+                                <a href="{% url 'edit_skill' skill.id %}" class="btn btn-sm btn-outline-warning">✏️ Edit</a>
+                                <a href="{% url 'delete_skill' skill.id %}" class="btn btn-sm btn-outline-danger">🗑 Delete</a>
+                            </span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                    {% if learn_skills %}
+                    <h5 class="mt-3 text-success">🎯 Skills You Want to Learn</h5>
+                    <ul class="list-group">
+                        {% for skill in learn_skills %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>{{ skill.skill.name }}</span>
+                            <a href="{% url 'delete_skill' skill.id %}" class="btn btn-sm btn-outline-danger">🗑 Delete</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                    {% if volunteer_skills %}
+                    <h5 class="mt-3 text-warning">🌟 Volunteer Skills</h5>
+                    <ul class="list-group">
+                        {% for skill in volunteer_skills %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>{{ skill.skill.name }} <span class="badge bg-warning">Level: {{ skill.skill_proficiency }}</span></span>
+                            <a href="{% url 'delete_skill' skill.id %}" class="btn btn-sm btn-outline-danger">🗑 Delete</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+                {% else %}
+                <p class="text-muted">You haven't added any skills yet.</p>
+                <a href="{% url 'add_skill' %}" class="btn btn-success w-100 fw-bold">➕ Add Skills</a>
+                {% endif %}
+            </div>
+
+            <!-- Find Skills Section -->
+            <div class="card shadow p-4 mt-3">
+                <h4>🔍 Find Skills</h4>
+                <p class="text-muted">Looking for a specific skill? Explore available skill swaps.</p>
+                <a href="{% url 'find_skills' %}" class="btn btn-primary w-100">🎯 Find Skills to Learn</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Uploading Profile Picture -->
+<div class="modal fade" id="uploadPhotoModal" tabindex="-1" aria-labelledby="uploadPhotoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="uploadPhotoModalLabel">Upload Profile Picture</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{% url 'upload_profile_pic' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <label for="profile_pic" class="form-label">Select an Image:</label>
+                    <input type="file" name="profile_pic" id="profile_pic" class="form-control" accept="image/*" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Custom CSS -->
+<style>
+    .container {
+        max-width: 1100px;
+    }
+
+    .profile-pic {
+        width: 160px;
+        height: 160px;
+        object-fit: cover;
+        border-radius: 50%;
+    }
+
+    .card {
+        border-radius: 12px;
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .card:hover {
+        transform: scale(1.02);
+    }
+
+    .list-group-item {
+        border-radius: 8px;
+        font-size: 16px;
+    }
+
+    .btn {
+        border-radius: 8px;
+    }
+
+    h4, h5 {
+        font-weight: 600;
+    }
+
+    .btn-primary,
+    .btn-success {
+        font-weight: bold;
+    }
+
+    .modal-content {
+        border-radius: 12px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .row {
+            flex-direction: column;
+        }
+    }
+</style>
+
+{% endblock %}

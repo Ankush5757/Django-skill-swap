@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-5">
+    <div class="p-4 shadow-lg rounded bg-white text-dark">
+        <h2 class="text-center mb-4 text-primary">➕ Add Your Skills</h2>
+
+        <form method="POST" action="{% url 'add_skill' %}" class="p-3">
+            {% csrf_token %}
+
+            <!-- Skill Type Selection -->
+            <div class="mb-3">
+                <label class="form-label fw-bold">💡 Select Skill Type:</label>
+                <div class="form-check">
+                    <input type="radio" id="swap" name="skill_type" value="swap" class="form-check-input" required>
+                    <label for="swap" class="form-check-label">Add Skills for Swap (Teach & Learn)</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" id="volunteer" name="skill_type" value="volunteer" class="form-check-input" required>
+                    <label for="volunteer" class="form-check-label">Volunteer to Teach</label>
+                </div>
+            </div>
+
+            <!-- Skills to Teach -->
+            <div class="mb-3 skill-swap-section d-none">
+                <label for="teach_skill" class="form-label fw-bold">📚 Select a Skill You Can Teach:</label>
+                <select name="teach_skill" id="teach_skill" class="form-select border-primary">
+                    <option value="">-- Choose Skill --</option>
+                    {% for skill in all_skills %}
+                        <option value="{{ skill.id }}">{{ skill.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Skills to Learn -->
+            <div class="mb-3 skill-swap-section d-none">
+                <label for="learn_skill" class="form-label fw-bold">🎯 Select a Skill You Want to Learn:</label>
+                <select name="learn_skill" id="learn_skill" class="form-select border-success">
+                    <option value="">-- Choose Skill --</option>
+                    {% for skill in all_skills %}
+                        <option value="{{ skill.id }}">{{ skill.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Volunteer Skill Selection -->
+            <div class="mb-3 volunteer-section d-none">
+                <label for="volunteer_skill" class="form-label fw-bold">🌟 Select a Skill to Volunteer:</label>
+                <select name="volunteer_skill" id="volunteer_skill" class="form-select border-warning">
+                    <option value="">-- Choose Skill --</option>
+                    {% for skill in all_skills %}
+                        <option value="{{ skill.id }}">{{ skill.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- 🔹 Moved Proficiency Dropdown to be Dynamically Inserted -->
+            <div id="proficiency-container" class="d-none">
+                <label for="skill_proficiency" class="form-label fw-bold">📊 Select Your Proficiency Level:</label>
+                <select name="skill_proficiency" id="skill_proficiency" class="form-select border-info">
+                    <option value="">-- Select Proficiency --</option>
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                </select>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-success w-100 fw-bold">✅ Add Skill</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const swapRadio = document.getElementById("swap");
+        const volunteerRadio = document.getElementById("volunteer");
+
+        const skillSwapSection = document.querySelectorAll(".skill-swap-section");
+        const volunteerSection = document.querySelector(".volunteer-section");
+
+        const teachSelect = document.getElementById("teach_skill");
+        const learnSelect = document.getElementById("learn_skill");
+        const volunteerSelect = document.getElementById("volunteer_skill");
+
+        const proficiencyContainer = document.getElementById("proficiency-container");
+        const proficiencySelect = document.getElementById("skill_proficiency");
+
+        function resetFields() {
+            teachSelect.value = "";
+            learnSelect.value = "";
+            volunteerSelect.value = "";
+            proficiencySelect.value = "";
+            proficiencyContainer.classList.add("d-none");
+        }
+
+        swapRadio.addEventListener("change", function () {
+            skillSwapSection.forEach(el => el.classList.remove("d-none"));
+            volunteerSection.classList.add("d-none");
+            proficiencyContainer.classList.add("d-none");
+            resetFields();
+        });
+
+        volunteerRadio.addEventListener("change", function () {
+            volunteerSection.classList.remove("d-none");
+            skillSwapSection.forEach(el => el.classList.add("d-none"));
+            proficiencyContainer.classList.add("d-none");
+            resetFields();
+        });
+
+        // Show proficiency dynamically below the selected skill
+        function showProficiencyDropdown(selectedField) {
+            if (selectedField.value) {
+                proficiencyContainer.classList.remove("d-none");
+                selectedField.parentNode.after(proficiencyContainer); // Moves it below the selected field
+            } else {
+                proficiencyContainer.classList.add("d-none");
+                proficiencySelect.value = "";
+            }
+        }
+
+        teachSelect.addEventListener("change", function () {
+            showProficiencyDropdown(teachSelect);
+        });
+
+        volunteerSelect.addEventListener("change", function () {
+            showProficiencyDropdown(volunteerSelect);
+        });
+
+        // Prevent same skill selection in Teach & Learn
+        teachSelect.addEventListener("change", function () {
+            if (teachSelect.value === learnSelect.value) {
+                alert("You cannot choose the same skill for both Teach & Learn!");
+                learnSelect.value = "";
+            }
+        });
+
+        learnSelect.addEventListener("change", function () {
+            if (learnSelect.value === teachSelect.value) {
+                alert("You cannot choose the same skill for both Teach & Learn!");
+                teachSelect.value = "";
+            }
+        });
+    });
+</script>
+
+{% endblock %}

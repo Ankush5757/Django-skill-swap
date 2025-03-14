@@ -14,7 +14,7 @@
                     {% for user in swap_users %}
                     <div class="card shadow common-card p-3 rounded-3">
                         <div class="d-flex align-items-center">
-                            <img src="{% if user.profile_picture and user.profile_picture.image %}{{ user.profile_picture.image.url }}{% else %}{% static 'images/default-profile.avif' %}{% endif %}"
+                            <img src="{% if user.profile_picture and user.profile_picture.image %}{{ user.profile_picture.image.url }}{% else %}{% static 'images/default-profile.jpg' %}{% endif %}"
                                 class="rounded-circle border border-secondary me-3 profile-pic">
                             <h5 class="text-dark fw-bold mb-0">{{ user.name }}</h5>
                         </div>
@@ -60,7 +60,7 @@
                     {% for user in volunteer_users %}
                     <div class="card shadow common-card p-3 rounded-3">
                         <div class="d-flex align-items-center">
-                            <img src="{% if user.profile_picture and user.profile_picture.image %}{{ user.profile_picture.image.url }}{% else %}{% static 'images/default-profile.avif' %}{% endif %}"
+                            <img src="{% if user.profile_picture and user.profile_picture.image %}{{ user.profile_picture.image.url }}{% else %}{% static 'images/default-profile.jpg' %}{% endif %}"
                                 class="rounded-circle border border-secondary me-3 profile-pic">
                             <h5 class="text-dark fw-bold mb-0">{{ user.name }}</h5>
                         </div>

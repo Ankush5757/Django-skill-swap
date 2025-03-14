@@ -127,10 +127,9 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown"
                             role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="{% if profile_pic and profile_pic.image %}{{ profile_pic.image.url }}{% else %}{% static 'images/default-profile.avif' %}{% endif %}"
+                            <img src="{% if profile_pic and profile_pic.image %}{{ profile_pic.image.url }}{% else %}{% static 'images/default-profile.jpg' %}{% endif %}"
                                 class="profile-img">
                             <span class="ms-2">{% if first_name %}{{ first_name }}{% else %}Guest{% endif %}</span>
-
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">

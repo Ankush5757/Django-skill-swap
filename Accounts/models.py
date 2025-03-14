@@ -22,7 +22,7 @@ class Student(models.Model):
 
 class Profile_Pic(models.Model):
     student = models.OneToOneField(Student, on_delete=models.CASCADE, related_name="profile_picture")
-    image = models.ImageField(upload_to="profile_pics/", blank=True, null=True)
+    image = models.ImageField(upload_to="profile_pics/", blank=True, null=True, default="static/images/default-profile.jpg")
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
